@@ -1,0 +1,52 @@
+plugins {
+  id 'application'
+  id 'java'
+}
+
+import org.gradle.internal.os.OperatingSystem
+
+project.ext.lwjglVersion = "3.2.3"
+
+switch (OperatingSystem.current()) {
+  case OperatingSystem.LINUX:
+    project.ext.lwjglNatives = "natives-linux"
+    break
+  case OperatingSystem.MAC_OS:
+    project.ext.lwjglNatives = "natives-macos"
+    break
+  case OperatingSystem.WINDOWS:
+    project.ext.lwjglNatives = "natives-windows"
+    break
+}
+
+group 'cluracan'
+mainClassName = 'cluracan.Main'
+version '0.1'
+
+sourceCompatibility = targetCompatibility = 1.8
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+  implementation "org.lwjgl:lwjgl"
+  implementation "org.lwjgl:lwjgl-glfw"
+  implementation "org.lwjgl:lwjgl-opengl"
+
+  runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+  runtimeOnly "org.lwjgl:lwjgl-opengl::$lwjglNatives"
+}
+
+jar {
+  manifest {
+    attributes (
+      'Class-Path: lwjgl.jar libs/$lwjglNatives',
+      'Main-Class': 'cluracan.Main',
+      'Manifest-Version': '1.0'
+    )
+  }
+}
